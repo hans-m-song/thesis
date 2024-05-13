@@ -1,0 +1,68 @@
+\appendix
+
+\input{media/scripts}
+\input{media/results}
+\input{media/prism-model}
+
+\chapter{Test Scripts}
+
+\section{Deterministic State Generator}
+
+\subsection{Participation Probability} \label{appendix:testparticipationprobability}
+
+\verbatiminput{media/state-generator-test-participation-probability.sh}
+
+\subsection{Participation Probability Taxed} \label{appendix:testparticipationprobabilitytaxed}
+
+\verbatiminput{media/state-generator-test-participation-probability-taxed.sh}
+
+\subsection{Taxation Rate} \label{appendix:testparticipationtax}
+
+\verbatiminput{media/state-generator-test-participation-tax.sh}
+
+\chapter{Raw Data}
+
+\section{Experimentation System Details} \label{appendix:computerspecs}
+
+The computer on which all experiments were executed has the following specifications:
+
+\begin{itemize}
+    \item CPU - AMD Ryzen 5 2600, 6 Cores, 12 Threads at 3.4GHz
+    \item RAM - 16GB DDR4
+\end{itemize}
+
+\section{Hash-rate Distribution} \label{appendix:hashrate-distribution}
+
+Data retrieved from \cite{bitcoinhashrate2020}.
+\begin{table}[H]
+    \centering
+    \csvautotabular{media/hashrate-distribution.csv}
+    \caption{Distribution of mined blocks per pool over a 24 hour period}
+    \label{table:hashrate-distribution}
+\end{table}
+
+\section{Deterministic State Generator Variable Participation Chance Results} \label{appendix:state-results}
+
+\begin{table}[H]
+    \centering
+    \csvautotabular{media/state-results.csv}
+    \caption{Metrics retrieved from test script (\cref{appendix:testparticipationprobability})}
+    \label{table:testparticipationprobability}
+\end{table}
+
+
+\section{Deterministic State Generator Variable Participation Chance Results} \label{appendix:state-results-tax}
+
+\begin{table}[H]
+    \centering
+    \csvautotabular{media/state-results-tax.csv}
+    \caption{Metrics retrieved from test script (\cref{appendix:testparticipationtax})}
+    \label{table:testparticipationprobability}
+\end{table}
+
+\chapter{Code}
+
+\section{PRISM-games CSG Model}
+\label{appendix:prism-model}
+
+\verbatiminput{media/model.prism}

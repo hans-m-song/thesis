@@ -1,4 +1,6 @@
-% \documentclass[instructions]{uqthesis}
+% !TeX root = ./MainThesis.tex
+
+%\documentclass[instructions]{uqthesis}
 \documentclass[final]{uqthesis} 
 
 
@@ -32,6 +34,7 @@
 
 %You must have the memoir class installed.
 
+\input{other/preamble}
 \input{LaTexPackages.tex}
 
 % ***************************************************
@@ -39,37 +42,43 @@
 % ***************************************************
 %***THESIS TITLE***
 %Use Sentence Case (capitalise only the first word and proper nouns).
-\title{Title here: Subtitle}
+\title{Incentivising Decentralisation with Harberger Tax}
 
 %***YOUR NAME***
 %Do not include initials or middle names. Do not include your supervisor(s)' name(s).
-\author{Candidate's full name}
+\author{Hans Song}
 %***YOUR CURRENT DEGREES***
 %Use abbreviations. Do not include the date or location of your degree. Do not include the degree for which this thesis is being submitted.
-\currentdegrees{Candidate’s academic degrees}
+\currentdegrees{}
 
 %***ORCID ID***
 %Add and hyperlink your ORCID
-\orcid{\href{add your ORCID url here}{Candidate's ORCID}}
+\orcid{}
 
 %***YEAR OF SUBMISSION***
-\date{Year}
+\date{2020}
 %***TYPE OF DEGREE***
-\submittedfor{Doctor}
+\submittedfor{Bachelors}
 %If this thesis is being submitted for Masters, comment out the above line (add % before line) and remove comment (by removing %) from line below
 %\submittedfor{Masters}
 
 %***YOUR SCHOOL***
 %Use Title Case (capitalise every word which is not a conjunction or preposition).
 %See - http://blog.apastyle.org/apastyle/2012/03/title-case-and-sentence-case-capitalization-in-apa-style.html - for help.
-\school{Name of the Enrolling Unit}
+\school{Information Technology and Electrical Engineering}
 
 \begin{document}
 
 \frontmatter
+
 % Assemble title page
 \maketitle
 \clearpage
+
+\pagestyle{fancy}
+\fancyhead{}
+\renewcommand{\headrulewidth}{0pt}
+\cfoot{\thepage}
 
 % ***************************************************
 % Preface
@@ -77,42 +86,35 @@
 \section{Abstract}
 \normalfont
 %Open abstract.tex to edit
-\input{./Abstract/Abstract.tex}
+\input{content/abstract}
 
 \clearpage
 % ***************************************************
 \section*{Declaration by author}
 %DO NOT EDIT.
-\input{./Authordeclaration.tex}
+\input{other/declaration}
 
 \clearpage
 %YOU MUST EDIT THIS DOCUMENT.
-\input{./PreliminaryAndBackPages/Preliminary.tex}
+\input{other/frontmatter}
 
 % ***************************************************
 % Thesis Content
 %****************************************************
 \mainmatter
 
-%Each chapter is a separate .tex file. Use \input to load them here, as demonstrated below for Chapter 1 and Chapter 2.
-%We recommend keeping each in a separate subfolder, with its accompanying figures, etc. This is how the template is currently structured.
-%If you wish to divide your thesis into parts (each containing multiple chapters), us the \part{} command.
+\input{ch1/index}
 
-%CHAPTER 1
-\input{./Chapter1/Introduction.tex}
+\input{ch2/index}
 
-%CHAPTER 2
-\input{./Chapter2/Chapter2.tex}
+\input{ch3/index}
 
-% HOW TO ADD ADDITIONAL CHAPTERS
-% Step One: Add a new folder called "ChapterX" (X being the chapter number).
-% Step Two: Within the folder add a new .tex file by clicking the "New File" button in the Overleaf Menu. Rename the file to a title of your choice.
-% Step Three: Copy the Chapter 2 headline and "\input" command located above and insert it below Chapter 2.
-% Step Four: Rename the headline to your specific chapter number, change the input command to include the name of the folder you created and the name of the file you created.
-% Repeat this process for every chapter.
+\input{ch4/index}
+
+\input{ch5/index}
 
 %CONCLUSION CHAPTER
-\input{./Conclusion/Conclusion.tex}
+\input{content/conclusion}
 
 % ***************************************************
 % Bibliography
@@ -126,9 +128,11 @@
 %To use one of the styles provided ensure the % is removed from the start of the line, and the other option is commented out with a % at the start of the line. The style elsarticle-num is active by default.
 
 %\bibliographystyle{apalike}
-\bibliographystyle{elsarticle-num}
+% \bibliographystyle{elsarticle-num}
 
-\bibliography{./References/Bibliography}
+% \bibliography{other/sources}
+
+\printbibliography
 
 %When you have finished your thesis we recommend that you manually fix any errors in your bibliography. 
 %To do this, compile, copy the .bbl into a new .tex file and include this here after commenting out the other bibliography commands. Make corrections in that .tex file.
@@ -140,24 +144,24 @@
 %Simply adapt the same formatting used for other chapters.
 \appendix
 % If you need appendix in your thesis then consider the following appendix file (you can add more if you need more) otherwise you should not consider it in your main thesis.
-\include{./Appendix/Appendix}
+\include{content/appendix}
 
 % ***************************************************
 % Examples
 %**************************************************** 
 % The following files are only for examples and you should not include them in your final thesis.
-\include{./Examples/ExampleOfCitations}
-\include{./Examples/ExampleOfCode}
-\include{./Examples/ExampleOfEquations}
-\include{./Examples/ExampleOfFigures}
-\include{./Examples/ExampleOfFlowCharts}
-\include{./Examples/ExampleOfTables}
+% \include{./Examples/ExampleOfCitations}
+% \include{./Examples/ExampleOfCode}
+% \include{./Examples/ExampleOfEquations}
+% \include{./Examples/ExampleOfFigures}
+% \include{./Examples/ExampleOfFlowCharts}
+% \include{./Examples/ExampleOfTables}
 
 
 % ***************************************************
 % Back Matter
 %**************************************************** 
 %COMMENT OUT IF YOU DO NOT WISH TO INCLUDE BACK MATTER.
-\input{./PreliminaryAndBackPages/Back.tex}
+% \input{./PreliminaryAndBackPages/Back.tex}
 
 \end{document}

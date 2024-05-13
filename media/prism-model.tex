@@ -1,0 +1,136 @@
+\begin{filecontents*}{media/model.prism}
+csg
+
+player p0 P0 endplayer
+player p1 P1 endplayer
+player p2 P2 endplayer
+
+const int MAX_STEPS = 999;
+const int MAX_INT = 99;
+
+const int STAGE_NONE = -1;
+const int STAGE_DECIDE = 0;
+const int STAGE_PURCHASE = 1;
+
+const int NOPLAYER = -1;
+const int PLAYER0 = 0;
+const int PLAYER1 = 1;
+const int PLAYER2 = 2;
+
+const double p;
+const double q;
+const double tr;
+const double dr;
+
+formula discounted_tax = 1 / pow(1 + tr, steps / 2);
+
+formula current_tax = discounted_tax > dr ? discounted_tax : 0;
+
+formula current_stage = steps < MAX_STEPS 
+  ? mod(steps, 2) 
+  : STAGE_NONE;
+
+module P0
+
+  c0 : [0..MAX_INT] init 2;
+
+  [decide_0] current_stage = STAGE_DECIDE -> true;
+
+  [transact_0] current_stage = STAGE_PURCHASE & c0 > 0 ->
+    (
+      c0' = d1 = PLAYER0 & d2 = PLAYER0 
+        ? c0 - 2 
+        : d1 = PLAYER0 | d2 = PLAYER0
+        ? c0 - 1
+        : c0
+    );
+
+endmodule
+
+module P1
+
+  c1 : [0..MAX_INT] init 0;
+  d1 : [-1..2] init NOPLAYER;
+
+  [decide_1] current_stage = STAGE_DECIDE ->
+    p / 2 : (d1' = c2 > 0 ? PLAYER2 : c0 > 0 ? PLAYER0 : NOPLAYER) +
+    p / 2 : (d1' = c0 > 0 ? PLAYER0 : c2 > 0 ? PLAYER2 : NOPLAYER) +
+    1 - p : true;
+
+  [transact_1] current_stage = STAGE_PURCHASE ->
+    (
+      c1' = d2 = PLAYER1 & d1 = NOPLAYER
+        ? c1 - 1
+        : d2 != PLAYER1 & d1 != NOPLAYER
+        ? c1 + 1
+        : c1
+    );
+
+endmodule
+
+module P2
+
+  c2 : [0..MAX_INT] init 0;
+  d2 : [-1..2] init NOPLAYER;
+
+  [decide_2] current_stage = STAGE_DECIDE ->
+    q / 2 : (d2' = c1 > 0 ? PLAYER1 : c0 > 0 ? PLAYER0 : NOPLAYER) +
+    q / 2 : (d2' = c0 > 0 ? PLAYER0 : c1 > 0 ? PLAYER1 : NOPLAYER) +
+    1 - q : true;
+
+  [transact_2] current_stage = STAGE_PURCHASE ->
+    (
+      c2' = d1 = PLAYER2 & d2 = NOPLAYER
+        ? c2 - 1
+        : d1 != PLAYER2 & d2 != NOPLAYER
+        ? c2 + 1
+        : c2
+    );
+
+endmodule
+
+module Game
+
+  steps : [0..MAX_STEPS] init 0;
+
+  [] steps < MAX_STEPS & current_tax > 0 -> (steps' = steps + 1);
+
+endmodule
+
+rewards "p0"
+
+  [decide_0] true : c0 * current_tax;
+
+  [transact_0] true : d1 = PLAYER0 & d2 = PLAYER0 
+    ? 2 
+    : d1 = PLAYER0 | d2 = PLAYER0
+    ? 1
+    : 0;
+
+endrewards
+
+rewards "p1"
+
+  [decide_1] true : c1 * current_tax;
+  
+  [transact_1] true : d2 = PLAYER1 & d1 = NOPLAYER
+    ? 1
+    : d2 != PLAYER1 & d1 != NOPLAYER
+    ? -1
+    : 0;
+
+endrewards
+
+rewards "p2"
+
+  [decide_2] true : c2 * current_tax;
+
+  [transact_2] true : d1 = PLAYER2 & d2 = NOPLAYER
+    ? 1
+    : d1 != PLAYER2 & d2 != NOPLAYER
+    ? -1
+    : 0;
+
+endrewards
+
+\end{filecontents*}

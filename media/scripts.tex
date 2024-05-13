@@ -1,0 +1,55 @@
+\begin{filecontents*}{media/state-generator-test-participation-probability.sh}
+#!/bin/bash
+
+X=(0.1 0.3 0.5 0.7 0.9)
+
+for c1 in ${X[@]}; do
+  for c2 in ${X[@]}; do
+    node --max-old-space-size=10000 dist/index.js \
+      --format csv \
+      --output results/output-chance-$c1-$c2 \
+      --tax 0 \
+      --discount-factor 0 \
+      --wealth-difference 5 \
+      --max-depth 15 \
+      --p1 $c1 --p2 $c2 | tee -a log
+  done
+done
+\end{filecontents*}
+
+\begin{filecontents*}{media/state-generator-test-participation-probability-taxed.sh}
+#!/bin/bash
+
+X=(0.1 0.3 0.5 0.7 0.9)
+
+for c1 in ${X[@]}; do
+  for c2 in ${X[@]}; do
+    node --max-old-space-size=10000 dist/index.js \
+      --format csv \
+      --output results/output-chance-$c1-$c2 \
+      --tax 0.2 \
+      --discount-factor 0 \
+      --wealth-difference 5 \
+      --max-depth 15 \
+      --p1 $c1 --p2 $c2 | tee -a log
+  done
+done
+\end{filecontents*}
+
+\begin{filecontents*}{media/state-generator-test-participation-tax.sh}
+#!/bin/bash
+
+X=(0 0.1 0.3 0.5 0.7 0.9)
+
+for tax in ${X[@]}; do
+  node --max-old-space-size=10000 dist/index.js \
+    --format csv \
+    --output results/output-tax-$tax \
+    --tax $tax \
+    --discount-factor 0 \
+    --wealth-difference 5 \
+    --max-depth 15 \
+    --p1 0.9 --p2 0.9 | tee -a log
+done;
+
+\end{filecontents*}

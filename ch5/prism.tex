@@ -1,0 +1,20 @@
+\section{PRISM-games} \label{section:prism-results}
+
+\subsection{Implementation}
+
+The implemented model can be found in \cref{appendix:prism-model} or on Gitlab \footnote{https://gitlab.com/harberger-tax/prism-models}. It is written as a concurrent stochastic game (\texttt{csg}) with three players (a pool and two participants) and requires the following parameters: 
+
+\begin{itemize}
+    \item $p$ - The probability of player 1 purchasing.
+    \item $q$ - The probability of player 2 purchasing.
+    \item $tr$ - The tax rate.
+    \item $dr$ - The discount rate.
+\end{itemize}.
+
+The model is split into two phases per round. First, in the decision phase, all participants make a decision on whether or not to participate and if participating, who to purchase from. Next, in the purchase phase, all purchases are executed. The model was split into two phases in order to prevent double-purchasing where both participant may attempt to purchase from a participant with a single chunk.
+
+In order for PRISM-games to verify the model, rewards were associated with each phase. First, an amortised block reward reduced by tax and discount factor is awarded during the decision phase. Next, a participant is rewarded or penalised during the purchase phase if they bought or sold a chunk.
+
+\subsection{Results}
+
+Attempting to build the PRISM-games model more than 120 steps resulted in an unknown error, most likely due to being unable to acquire the necessary memory required, or being unable to support the required number of states. Additionally, there was no easy way to programmatically test with different parameters. Hence, PRISM-games was discarded in favour of a custom implementation with the deterministic state generator.

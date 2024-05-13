@@ -1,0 +1,26 @@
+\chapter{Formal Definition}
+
+\section{System Overview}
+
+The game requires the following entities:
+
+\begin{itemize}
+    \item Any number of \textit{miners} who contribute computational power.
+    \item The \textit{pool} that manages and allocates the dedicated computational power into \textit{chunks}.
+    \item The \textit{orchestrator} that delegates work to participants, holds unowned chunks.
+    \item Any number of \textit{participants} (who may be miners) who purchase and sell the authority over the computational power through ownership of chunks.
+\end{itemize}
+    
+For the purposes of this project, the orchestrator and pool act as a single entity (though an implementation could be based on any number of means such as a dedicated server or smart contract). The ownership of each chunk is taxed according to the Harberger tax (refer to \cref{section:harberger-tax}), with some additions: 
+
+\begin{itemize}
+    \item When a participant wishes to purchase a chunk, an auction is initiated. During which, any other participant may chose to participate and bid for the chunk.
+    \item When a participant is unable to afford the tax, they relinquish ownership of their chunk. 
+    \item Any unowned property is returned to a global pool of unowned property that participants may attempt to purchase through auction starting at the pools sale price.
+\end{itemize}
+
+Between each block validated, the orchestrator initiates the trade phase. During this phase, participants may initiate auctions and compete for the ownership of chunks. At the end of the trade phase, participants are taxed according to the number of chunks in their possession and their self-assessed valuation. This trade phase may occur multiple times between validated blocks or once per any number of validated blocks depending on the orchestrator. In the event the pool successfully validates a block, the reward is distributed according to the number of chunks in a participants possession.
+
+\input{ch3/mathematical-modelling}
+
+\input{ch3/state-diagrams}

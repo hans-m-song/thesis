@@ -14,7 +14,7 @@
 \NeedsTeXFormat{LaTeX2e}[2016/05/16]
 
 %Load the memoir class.
-\LoadClass[12pt, a4paper]{memoir}
+\LoadClass[12pt, a4paper, oneside]{memoir}
 
 %*************************************
 % Load packages
@@ -74,13 +74,13 @@
 % Set page and heading styles
 %*************************************
 % ********* Set page layout **********
-\setlrmarginsandblock{20mm}{20mm}{*}
-\setulmarginsandblock{20mm}{20mm}{*}
+\setlrmarginsandblock{25mm}{25mm}{*}
+\setulmarginsandblock{30mm}{30mm}{*}
 
-\setheadfoot{15mm}{\baselineskip}
+\setheadfoot{15mm}{15mm}
 \setheaderspaces{*}{\baselineskip}{*}
 
-\def\baselinestretch{1.1}
+\renewcommand{\baselinestretch}{1.5}
 
 %Make sure that TeX sorts out the geometry correctly.
 \checkandfixthelayout

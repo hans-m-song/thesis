@@ -1,0 +1,19 @@
+\section{Demonstration} \label{section:demonstration}
+
+A live example demonstrating a simple interactive game with a pool and two participants can be found live on \url{https://harberger-tax.netlify.app/} (as of Nov 1 2020) or in source code on Gitlab \footnote{\url{https://gitlab.com/harberger-tax/demonstration}}. As seen in \cref{figure:demonstration-start} below, the initial funds, chunks, and participation chance can be customised for each participant.
+
+\begin{figure}[H]
+  \centering
+  \caption{Demonstration initialisation screen}
+  \label{figure:demonstration-start}
+  \includegraphics[width=\textwidth]{media/demonstration-start.PNG}
+\end{figure}
+
+As seen in \cref{figure:demonstration-run} below, the user is then able to initiate an auction (balance permitting), skip, the round, or let the action be determined randomly during their turn. During the opponents turn, the user may chose to particpate and make a bid or skip. The deterministic state generator has also been integrated to give the user a limited prediction of the game's possible outcomes in the near future.
+
+\begin{figure}[H]
+  \centering
+  \caption{Demonstration run screen}
+  \label{figure:demonstration-run}
+  \includegraphics[width=\textwidth]{media/demonstration-run.PNG}
+\end{figure}

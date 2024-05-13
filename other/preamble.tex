@@ -1,0 +1,47 @@
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{amsmath}
+% \usepackage[a4paper]{geometry}
+% \usepackage{verbatim}
+\usepackage{diagbox}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage[]{todonotes}
+\usepackage{csvsimple}
+\usepackage{indentfirst}
+\usepackage[bottom]{footmisc}
+\usepackage[
+    backend=biber,
+    sorting=none,
+]{biblatex}
+
+\usepackage{hyperref}
+
+\usepackage{pdflscape}
+
+\hypersetup{
+    % colorlinks=true,
+    % allcolors=blue
+}
+
+\usepackage{cleveref}
+
+\DeclareRobustCommand{\bitcoin}{{%
+  \normalfont\sffamily
+  \raisebox{-.05ex}{\makebox[.1\width][l]{-\kern-.2em-}}B%
+}}
+
+\addbibresource{other/sources.bib}
+
+% \title{thesis-draft}
+% \author{Hans Song}
+% \date{October 2020}
+
+\algnewcommand\algorithmicswitch{\textbf{switch}}
+\algnewcommand\algorithmiccase{\textbf{case}}
+\algnewcommand\algorithmicassert{\texttt{assert}}
+\algdef{SE}[SWITCH]{Switch}{EndSwitch}[1]{\algorithmicswitch\ #1\ \algorithmicdo}{\algorithmicend\ \algorithmicswitch}
+\algdef{SE}[CASE]{Case}{EndCase}[1]{\algorithmiccase\ #1}{\algorithmicend\ \algorithmiccase}
+\algtext*{EndSwitch}
+\algtext*{EndCase}

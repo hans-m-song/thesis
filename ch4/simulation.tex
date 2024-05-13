@@ -1,0 +1,177 @@
+\section{Simulation}
+
+\subsection{Parameterisation}
+
+The simulation makes use of all variables defined in \cref{section:parameterisation} above and aims to be as close a representation of a potential game run as possible. Unlike the Deterministic State Generator, the simulation maintains a single persistent state that is updated based on a semi-random process rather than generating possible states.
+
+\subsection{Modelling}
+
+In order to facilitate increased complexity in a participants decision-making process, the participant can be represented as the following:
+
+\begin{align}
+    P &= (funds, chunks, chance, wantedChunks, \sigma) \\
+    \sigma &\subseteq \{\textsc{First, SkipFirst, Alternate, Chance, WantedChunks}\}
+\end{align}
+
+\begin{itemize}
+    \item $funds$ - The current balance of the participant.
+    \item $chunks$ - The chunks currently owned by the participant.
+    \item $chance$ - The chance of participating (required if $\textsc{Chance} \in \sigma$).
+    \item $wantedChunks$ - The target number of chunks the participant wishes to posess (required if $\textsc{WantedChunks} \in \sigma$).
+    \item $\sigma$ - The strategy used to determine participation, can be any individual strategy or a combination of strategies. Each element in $\sigma$ affects the participants predisposition to participate in and initiate auctions.
+    \begin{itemize}
+        \item \textsc{First} - Guarantee participation in the inital round.
+        \item \textsc{SkipFirst} - Guarantee no participation in the initial round.
+        \item \textsc{Alternate} - Alternate participation each round.
+        \item \textsc{Chance} - Base participation on a randomly generated number against the $chance$ value.
+        \item \textsc{WantedChunks} - Avoid participating if the owned chunks is equal or greater to the wanted chunks.
+    \end{itemize}
+\end{itemize}
+
+The pool model is also augmented with the properties of participants to simulate the expected reward a pool operator might expect from acting as a host for the game. In other words $P_\rho := P \cup p$.
+
+\subsection{Algorithms}
+
+Algorithm \ref{algorithm:simulate} below shows the looped execution of the simulation. The simulation iterates until the reward is reduced below a threshold. At each iteration, if the round matches up to the block interval, a reward may be distributed depending on a random number generated against the pool's global compute share. It accepts the following parameters:
+
+\begin{itemize}
+    \item $G$ - The game instance.
+    \item $B$ - The blockchain instance.
+    \item $P$ - The pool instance.
+    \item $S_\rho$ - The set of participants.
+\end{itemize}
+
+\begin{algorithm}[H]
+  \caption{Simulation event loop}
+  \label{algorithm:simulate}
+  \begin{algorithmic}[1]
+    \Procedure{simulate}{$G, B, P_\rho, S_\rho$}
+        \State $round \gets 0$
+        \While{$R(round) > t$}
+            \If{$round \mod \left( \left\lfloor \frac{B.b}{P_\rho.t} \right\rfloor \right) \equiv 0$}
+                \State $\textsc{reward}(S_\rho, B, P_\rho)$ \Comment{refer to \cref{algorithm:reward}}
+            \EndIf
+            \State $bidders \gets \{ b \in S_\rho \mid b.balance \geq 1 \}$
+            \For{$p \in \{ p \in S_\rho \mid p.chunks \geq 1\}$}
+                \State $\textsc{auction}(bidders, p)$ \Comment{refer to \cref{algorithm:auction}}
+            \EndFor
+            \State $round \gets round + 1$
+        \EndWhile
+    \EndProcedure
+  \end{algorithmic}
+\end{algorithm}
+
+Algorithm \ref{algorithm:reward} below rolls a generates a random float in the interval $[0, 1]$ against the pool's global compute share. If the roll was successful, the reward is distributed amongst the participants, with the leftover awarded to the pool. It accepts the parameters:
+
+\begin{itemize}
+    \item $S_\rho$ - The set of participants.
+    \item $B$ - The blockchain instance.
+    \item $P_\rho$ - The pool instance.
+\end{itemize}
+
+\begin{algorithm}[H]
+\caption{Reward system for pool participants}
+\label{algorithm:reward}
+\begin{algorithmic}[1]
+\Procedure{reward}{$S_\rho, B, P_\rho$}
+    \State $roll \gets \textsc{randomFloat(0, 1)}$ \Comment{a random decimal in the range $[0, 1]$}
+    \If{$roll > \frac{P_\rho.H}{B.\mathbb{H}}$} 
+        \State \Return \Comment{Pool did not validate the block} 
+    \EndIf
+    \State{$leftover \gets r$}
+    \For{$\rho \in S_\rho$}
+        \State $amount \gets R(\rho.chunks)$ \Comment{refer to \cref{equation:rewarddiscounted}}
+        \State{$\rho.funds \gets \rho.funds + amount$}
+        \State{$leftover \gets leftover - amount$}
+    \EndFor
+    \State{$P_\rho.funds \gets P_\rho.funds + leftover$}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+Algorithm \ref{algorithm:auction} below simulates the auction process for a standard open auction in which participants bid for the highest price. It accepts the parameters:
+
+\begin{itemize}
+    \item $B$ - The current bidders.
+    \item $\rho_s$ - The current seller.
+    \item $price$ - The current price or last bid.
+    \item $\rho_b$ - The last bidder.
+\end{itemize}
+
+\begin{algorithm}[H]
+\caption{Recursive auction resolution}
+\label{algorithm:auction}
+\begin{algorithmic}[1]
+\Procedure{auction}{$B$, $\rho_s$, $price$, $\rho_b$}
+    \If{$B = \emptyset$}
+        \State{$\rho_b.funds \gets \rho_b.funds - price$}
+        \State{$\rho_b.ownedChunks \gets \rho_b.ownedChunks + 1$}
+        \State{$\rho_s.funds \gets \rho_s.funds + price$}
+        \State{$\rho_s.ownedChunks \gets \rho_s.ownedChunks - 1$}
+        \State \Return
+    \EndIf
+    \State{$bidder_{max} \gets \rho_b$}
+    \State{$bid_{max} \gets price$}
+    \For{$bidder \in B$}
+        \State{$bid \gets bidder.\textsc{bid}(price)$}
+        \If{$bid > bid_{max}$}
+            \State{$bid_{max} \gets bid$}
+            \State{$bidder_{max} \gets bidder$}
+        \EndIf
+    \EndFor
+    \State{$B' \gets \emptyset$}
+    \For{$bidder \in B$}
+        \State $p \gets \textsc{checkParticipation}(bidder, \rho_s, bid_{max}, bidder_{max})$ \Comment{refer to \cref{algorithm:checkparticipation}}
+        \If{$p = true$}
+            \State{$B' \gets B' \cup bidder$}
+        \EndIf
+    \EndFor
+    \State{\Return $\textsc{auction}(B', \rho_s, bid_{max}, bidder_{max})$}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+Algorithm \ref{algorithm:checkparticipation} below considers the participants current state, the current bid, and the participants strategy in order to determine if the participant should (or can) participate. The parameters are:
+
+\begin{itemize}
+    \item $\rho$ - The participant.
+    \item $\rho_s$ - The current seller.
+    \item $price$ - The current bid.
+    \item $\rho_b$ - The current highest bidder.
+    \item $round$ - The current round.
+\end{itemize}
+
+\begin{algorithm}[H]
+\caption{Participant decision making process}
+\label{algorithm:checkparticipation}
+\begin{algorithmic}[1]
+\Procedure{checkParticipation}{$B, \rho_s, price, \rho_b, round$}
+    \If{$\rho = \rho_s \lor \rho = \rho_b \lor price > \rho.funds$
+            \State $\lor \;(\textsc{WantedChunks} \in \rho.\sigma$
+            \State $\land \; \rho.ownedChunks \geq \rho.wantedChunks)$
+            \State $\lor \; (\textsc{SkipFirst} \in \rho.\sigma$
+            \State $\land \; round = 0)$
+    }
+        \State \Return false
+    \EndIf
+    \If{$\textsc{First} \in \rho.\sigma \land round = 0$}
+        \State \Return true
+    \EndIf
+    \If{$\textsc{Alternate} \in \rho.\sigma$}
+        \If{$(\textsc{First} \in \rho.\sigma \land round \pmod 2 = 0)$
+                \State $\lor \; (\textsc{SkipFirst} \in \rho.\sigma \land round \pmod 2 \neq 0)$
+        }
+            \State \Return true
+        \EndIf
+    \EndIf
+    \If{$\textsc{Chance} \in \rho.\sigma \land \textsc{randomFloat}(0, 1) < \rho.chance$}
+        \State \Return true
+    \EndIf
+    \State \Return false
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Implementation}
+
+The source code for the implementation used for the purposes of this project can be found on Gitlab \footnote{\url{https://gitlab.com/harberger-tax/simulation}}. With similar reasoning to the deterministic state generator, the simulation is written in Typescript with the addition of Chart.js \cite{chartjs} to visualise data. 

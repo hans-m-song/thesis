@@ -1,0 +1,110 @@
+\section{Parameterisation} \label{section:parameterisation}
+
+The economic model can be broken down into the following components to create an approximated strategic game.
+
+\subsection{Chunks}
+
+All computational power dedicated to the system will be divided on the basis of a predefined number of chunks to form arbitrary discrete units of computational power. While it is unknown whether or not computational power can be divided based on an arbitrary number for a practical implementation, the computational power represented by each chunk will be equal for the purposes of modelling the system.
+
+\subsection{Participant}
+
+The participants are individuals who may or may not have ownership of some amount of computational power but participate in the system in order to buy and sell chunks of computational power. A participant may be defined as:
+
+\begin{equation}
+    \rho := (x, p_s, p_b, f(s))
+\end{equation}
+
+\noindent Where the parameters are as follows:
+\begin{itemize}
+    \item $x$ - Owned chunks - The number of chunks owned by the participant.
+    \item $p_s$ - \textbf{P}rice of \textbf{s}ale - The self-evaluated price set by the participant on their owned chunks.
+    \item $p_b$ - \textbf{B}uying \textbf{p}rice - The price at which the participant purchased a chunk during an auction.
+    \item $f(s)$ - \textbf{F}unction mapping a \textbf{s}tate to the participants decision.
+\end{itemize}
+
+During each interval, the participant may chose to initiate an auction given their balance is sufficient or to withhold and not take any action (refer to \crefrange{equation:participantactions}{equation:participantactionsend} for more details).
+
+\subsection{Pool}
+
+The pool acts as the conceptual host of the system, orchestrating auctions and rewarding participants relative to the block time. It is also responsible for managing the tax, dividing, and allocating chunks. A functional implementation would ideally be decentralised and deployed on a blockchain. A blockchain can be defined as:
+
+\begin{align}
+    P :=&\; (C, H, t, r, S_\rho) \\
+    S_\rho =&\; \{\rho_0, \rho_1, \ldots, \rho_n\}
+\end{align}
+
+\noindent Where the parameters are as follows:
+\begin{itemize}
+    \item $C$ - total \textbf{c}hunks - The total number of chunks to divide contributed computational power.
+    \item $H$ - \textbf{H}ash rate - The total hash-rate the contributed computational power is capable of.
+    \item $t$ - \textbf{T}rade intervals - the time interval at which a round of trade is executed relative to the block time.
+    \item $r$ - Tax \textbf{r}ate - The amount retained by the pool prior to distributing the reward, proportional to the participants price and number of owned chunks.
+    \item $S_\rho$ - \textbf{S}et of participants - The participants contributing to this pool.
+\end{itemize}
+
+\subsection{blockchain}
+
+An imitation of a real-world blockchain. For the purposes of the model, the actual creation and validation of the block is considered a constant. The discount factor may be used to imitate the depreciation in value of the cryptocurrency. Each blockchain can be defined as:
+
+\begin{align}
+    B :=&\; (\mathbb{R}, \mathbb{H}, b, d, S_{po}) \\
+    S_{po} =&\; \{P_0, P_1, \ldots, P_n\}
+\end{align}
+
+\noindent Where the parameters are as follows:
+\begin{itemize}
+    \item $\mathbb{R}$ - Block \textbf{r}eward - The value awarded on successfully validating a block of an arbitrary unit.
+    \item $\mathbb{H}$ - Global \textbf{h}ash rate - The total computational power dedicated to the blockchain.
+    \item $b$ - \textbf{B}lock time - The interval on which a new block is created.
+    \item $d$ - \textbf{d}iscount factor - The rate at which the valuation of the blockchains currency depreciates over time.
+    \item $S_{po}$ - \textbf{S}et of \textbf{po}ols - The Pools contributing computational power to this blockchain.
+\end{itemize}
+
+\subsection{Game}
+
+Containing all the components defined above, the game $G$ is defined to be:
+
+\begin{align}
+    G :=&\; (T_i, S_b) \\
+    S_b =&\; \{B_0, B_1, \ldots, B_n\}
+\end{align}
+
+\noindent Where the parameters are as follows:
+\begin{itemize}
+    \item $T_i$ - \textbf{T}ime \textbf{i}nterval - Represents a discrete time interval $i \in [0 \rightarrow \infty)$, that dictates a change in the state at each observed increment
+    \item $S_b$ - \textbf{S}et of \textbf{B}lockchains - the blockchains that exist in the Universe of Discourse.
+\end{itemize}
+
+\section{Relations}
+
+\noindent Expected reward for the ownership of a chunk
+\begin{equation} \label{equation:chunkreward}
+    R = \frac{\mathbb{R}}{c} \times \frac{H}{\mathbb{H}}
+\end{equation}
+
+\noindent Reward per chunk with taxation and discount factor applied
+\begin{equation} \label{equation:rewarddiscounted}
+    R(d) = R \times \left( 1 - r \right) \times \left( \frac{1}{1 + d} \right)^{d}
+\end{equation}
+
+\noindent Amount taxable
+\begin{equation} \label{equation:tax}
+    t(x) = x \times p_s \times (1 - r)
+\end{equation}
+
+\noindent Instantaneous profit from a purchase
+\begin{equation} \label{equation:profitpurchase}
+    p_{purchase} = (x + y) \times R - t(x) - t(y) - y \times p_b
+\end{equation}
+
+\noindent Instantaneous profit from withholding
+\begin{equation} \label{equation:profitheld}
+    p_{held} = x \times R - t(x)
+\end{equation}
+
+\noindent Instantaneous profit from a sale
+\begin{equation} \label{equation:profitsale}
+    p_{sale} = (y \times p_s)
+\end{equation}
+
+At time $T_0$, all participants begin with $x = 0$ and a randomised amount of funds. Between each interval $T_i$ to $T_{i + 1}$, participants will have an opportunity to initiate an auction for any of the available chunks from the pool at a starting rate of $p_p$ or from any of the other participants at their set price $p_s$ while keeping in mind their potential profit from \crefrange{equation:profitpurchase}{equation:profitheld}. A reward is distributed to chunk owners according to \cref{equation:chunkreward} or \cref{equation:rewarddiscounted} depending on the discount factor. Finally, a tax is deducted from each participant according to \cref{equation:tax} where $x = participant.x$ at $T_{i + 1}$.
